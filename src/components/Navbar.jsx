@@ -16,7 +16,7 @@ const ThemeToggleSwitch = () => {
       className={`
         flex items-center transition-all duration-300 px-2 py-1
         rounded-full focus:outline-none group
-        ${theme === "light" ? "bg-gray-200" : "bg-slate-800"}
+        ${theme === "light" ? "bg-gray-200" : "bg-gray-700"}
         relative w-16 h-8 ml-2
       `}
       aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
@@ -151,7 +151,7 @@ const Navbar = () => {
           type="datetime-local"
           value={moment(tempStartDateTime).format('YYYY-MM-DDTHH:mm')}
           onChange={(e) => setTempStartDateTime(e.target.value)}
-          className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 transition-all duration-300"
+          className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 transition-all duration-300"
         />
       </div>
       <div className="custom-dsm:flex items-center hidden space-x-2">
@@ -188,7 +188,7 @@ const Navbar = () => {
           type="datetime-local"
           value={moment(tempEndDateTime).format('YYYY-MM-DDTHH:mm')}
           onChange={(e) => setTempEndDateTime(e.target.value)}
-          className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700 transition-all duration-300"
+          className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 transition-all duration-300"
         />
       </div>
       <div className="custom-dsm:flex items-center hidden space-x-2">
