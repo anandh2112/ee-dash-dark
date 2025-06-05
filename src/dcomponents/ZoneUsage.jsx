@@ -297,10 +297,10 @@ const ZoneUsage = () => {
         )}
 
         <div className="flex space-x-12 pb-2 justify-center items-start">
-          <div className="bg-[#008B8B] text-white px-4 py-3 rounded-lg shadow-lg border-2 border-[#99FF99] text-lg font-bold">
+          <div className="bg-[#008B8B] text-white px-4 py-3 rounded-lg shadow-lg border-2 dark:border-1 border-[#99FF99] text-lg font-bold">
             C-49
           </div>
-          <div className="bg-[#FFA500] text-white px-4 py-3 rounded-lg shadow-lg border-2 border-[#FFFF99] text-lg font-bold">
+          <div className="bg-[#FFA500] text-white px-4 py-3 rounded-lg shadow-lg border-2 dark:border-1 border-[#FFFF99] text-lg font-bold">
             C-50
           </div>
         </div>

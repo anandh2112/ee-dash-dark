@@ -16,7 +16,7 @@ const ThemeToggleSwitch = () => {
       className={`
         flex items-center transition-all duration-300 px-2 py-1
         rounded-full focus:outline-none group
-        ${theme === "light" ? "bg-yellow-100" : "bg-slate-800"}
+        ${theme === "light" ? "bg-gray-200" : "bg-slate-800"}
         relative w-16 h-8 ml-2
       `}
       aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
@@ -28,7 +28,7 @@ const ThemeToggleSwitch = () => {
         transition-all duration-300
         z-10
         ${theme === "light"
-          ? "translate-x-0 bg-yellow-400"
+          ? "translate-x-0 bg-[#FFA500]"
           : "translate-x-8 bg-blue-500"
         }
       `}

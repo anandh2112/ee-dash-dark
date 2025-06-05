@@ -81,7 +81,7 @@ const MeterInfo = () => {
   return (
     <div className="p-6 bg-white dark:bg-gray-900 rounded-lg shadow-md flex flex-col transition-colors duration-300">
       <h2 className="text-xl font-semibold pb-7 text-gray-900 dark:text-gray-100 transition-colors duration-300">Energy Meters</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-16 gap-y-6 mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-16 gap-y-6 mx-auto xl:mx-0">
         {energyMeters.map((meter) => (
           <EnergyMeter key={meter.id} name={meter.name} consumption={meter.consumption} id={meter.id} />
         ))}

@@ -15,12 +15,12 @@ import EnergySources from "../../dcomponents/EnergySources";
 
 const EDashboard = () => {
   return (
-    <div className="flex flex-col bg-gray-100 dark:bg-gray-700 transition-all duration-300 p-3 gap-4">
+    <div className="flex flex-col bg-gray-100 dark:bg-gray-700 transition-all duration-300 p-3 gap-3">
       <div className="flex flex-col bg-gray-100 dark:bg-gray-700 transition-all duration-300 gap-3">
-        <div className="mt-1">
+        <div>
           <Edmc />
         </div>
-        <div className="grid gap-4 grid-cols-1 xl:grid-cols-2 relative">
+        <div className="grid gap-2 grid-cols-1 xl:grid-cols-2 relative">
           <ZoneUsage />
           <EnergySources />
         </div>
