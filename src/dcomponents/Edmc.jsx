@@ -9,7 +9,7 @@ const getCurrentRate = (hours) => {
   return { period: "Normal Tariff (03:00 - 05:00)", rate: "₹7.10 per kVAh" };
 };
 
-const Edmc = () => {
+const   Edmc = () => {
   const { startDateTime, endDateTime } = useContext(DateContext);
   const { period, rate } = getCurrentRate(new Date().getHours());
   const [data, setData] = useState({ consumption: null, apconsumption: null, peakDemand: null, totalCost: null, carbonFootprint: null });
@@ -60,7 +60,7 @@ const Edmc = () => {
   return (
     <div className="bg-white dark:bg-gray-900 shadow-md p-4 rounded-lg w-full transition-all duration-300">
       <div className="grid grid-cols-1 sm:grid-cols-4">
-        <div className="flex flex-col items-center text-center border-b sm:border-b-0 sm:border-r border-gray-300 dark:border-gray-600 sm:pr-4 h-full space-y-1">
+        <div className="flex flex-col items-center text-center border-b sm:border-b-0 sm:border-r border-gray-300 dark:border-white sm:pr-4 h-full space-y-1">
           <h4 className="text-md text-gray-900 dark:text-gray-400">Facility Information</h4>
           <p className="text-md font-bold text-gray-900 dark:text-gray-100">Metalware Corporation</p>
           <p className="text-md text-gray-900 dark:text-gray-400">
@@ -71,7 +71,7 @@ const Edmc = () => {
           </p>
         </div>
 
-        <div className="flex flex-col items-center text-center border-b sm:border-b-0 sm:border-r border-gray-300 dark:border-gray-600 sm:pr-4 h-full space-y-1">
+        <div className="flex flex-col items-center text-center border-b sm:border-b-0 sm:border-r border-gray-300 dark:border-white sm:pr-4 h-full space-y-1">
           <h4 className="text-md text-gray-900 dark:text-gray-400">Consumption</h4>
           {loading ? (
             <div className="animate-pulse h-6 w-20 bg-gray-200 dark:bg-gray-700 rounded" />
@@ -86,7 +86,7 @@ const Edmc = () => {
           <p className="text-md font-bold text-gray-900 dark:text-white">{renderValue(data.peakDemand, "kVA")}</p>
         </div>
 
-        <div className="flex flex-col items-center text-center border-b sm:border-b-0 sm:border-r border-gray-300 dark:border-gray-600 sm:pr-4 h-full space-y-1">
+        <div className="flex flex-col items-center text-center border-b sm:border-b-0 sm:border-r border-gray-300 dark:border-white sm:pr-4 h-full space-y-1">
           <h4 className="text-md text-gray-900 dark:text-gray-400">Cost of Electricity</h4>
           {loading ? (
             <div className="animate-pulse h-6 w-20 bg-gray-200 dark:bg-gray-700 rounded" />

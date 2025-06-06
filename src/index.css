@@ -1,11 +1,209 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
 
-body{
-    margin: 0;
-    padding:0;
-    font-family: "Open Sans", sans-serif;
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Open Sans", sans-serif;
 }
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Prevent popper-induced layout shift */
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
+
+/* Optional: Remove triangle that may cause flickering */
+.react-datepicker__triangle {
+  display: none;
+}
+
+/* Datepicker container consistency */
+.react-datepicker {
+  border: 1px solid #e5e7eb; /* Tailwind gray-200 */
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Light theme */
+body.light .react-datepicker {
+  background-color: #fff;
+  color: #111827; /* Tailwind gray-900 */
+}
+body.light .react-datepicker__header {
+  background-color: #f9fafb; /* Tailwind gray-50 */
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Dark theme - Make all fonts white in datepicker */
+body.dark .react-datepicker {
+  background-color: #1f2937; /* Tailwind gray-800 */
+  color: #fff !important;
+}
+body.dark .react-datepicker *,
+body.dark .react-datepicker__current-month,
+body.dark .react-datepicker-time__header,
+body.dark .react-datepicker__day,
+body.dark .react-datepicker__day-name,
+body.dark .react-datepicker__time-name,
+body.dark .react-datepicker__header,
+body.dark .react-datepicker__year-read-view--selected-year,
+body.dark .react-datepicker__month-read-view--selected-month,
+body.dark .react-datepicker__month-text,
+body.dark .react-datepicker__quarter-text,
+body.dark .react-datepicker__year-text {
+  color: #fff !important;
+  background: transparent;
+}
+
+/* Ensure header background is dark and border matches theme */
+body.dark .react-datepicker__header {
+  background-color: #374151; /* Tailwind gray-700 */
+  border-bottom: 1px solid #4b5563;
+}
+
+/* Selected/active days: high contrast on dark */
+body.dark .react-datepicker__day--selected,
+body.dark .react-datepicker__day--keyboard-selected,
+body.dark .react-datepicker__month-text--selected,
+body.dark .react-datepicker__quarter-text--selected,
+body.dark .react-datepicker__year-text--selected {
+  background-color: #2563eb !important; /* Tailwind blue-600 */
+  color: #fff !important;
+}
+
+/* Today highlight for dark */
+body.dark .react-datepicker__day--today {
+  border-radius: 0.3rem;
+  border: 1px solid #fff !important;
+  color: #fff !important;
+}
+
+/* Disabled days in dark: faded white */
+body.dark .react-datepicker__day--disabled,
+body.dark .react-datepicker__month-text--disabled,
+body.dark .react-datepicker__quarter-text--disabled,
+body.dark .react-datepicker__year-text--disabled {
+  color: #9ca3af !important; /* Tailwind gray-400 */
+}
+
+/* HOVER: Change color for hover on other dates than the selected one to gray-700 in dark theme */
+body.dark .react-datepicker__day:not(.react-datepicker__day--selected):not(.react-datepicker__day--keyboard-selected):not(.react-datepicker__day--disabled):hover,
+body.dark .react-datepicker__month-text:not(.react-datepicker__month-text--selected):not(.react-datepicker__month-text--disabled):hover,
+body.dark .react-datepicker__quarter-text:not(.react-datepicker__quarter-text--selected):not(.react-datepicker__quarter-text--disabled):hover,
+body.dark .react-datepicker__year-text:not(.react-datepicker__year-text--selected):not(.react-datepicker__year-text--disabled):hover {
+  background-color: #374151 !important; /* Tailwind gray-700 */
+  color: #fff !important;
+}
+
+/* Scrollbar customization */
+select::-webkit-scrollbar {
+  width: 4px;
+}
+select::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+}
+select::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ----------------- Custom Select Styles ----------------- */
+.custom-select-wrapper {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+.custom-select-btn {
+  background: var(--custom-select-bg, #fff);
+  color: var(--custom-select-color, #111827);
+  cursor: pointer;
+  outline: none;
+}
+.custom-select-btn:focus {
+  border-color: #2563eb;
+}
+.custom-select-dropdown {
+  background: var(--custom-select-bg, #fff);
+  color: var(--custom-select-color, #111827);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  border-radius: 8px;
+  z-index: 9999;
+  border: 1px solid #e5e7eb;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  overflow-y: auto;
+  left: 0 !important;
+  right: auto !important;
+  top: 110% !important;
+  bottom: auto !important;
+  /* Show only a thin scrollbar bar on the right, no arrows, no background */
+  scrollbar-width: thin;      /* For Firefox */
+  scrollbar-color: #888 transparent; /* For Firefox: thumb, track */
+}
+.custom-select-dropdown::-webkit-scrollbar {
+  width: 3px;
+  background: transparent;
+}
+.custom-select-dropdown::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+.custom-select-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-select-dropdown::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.custom-select-option {
+  transition: background 0.1s, color 0.1s;
+  font-size: 1rem;
+}
+.custom-select-option.highlighted {
+  background: var(--custom-select-highlight, #f3f4f6);
+}
+.custom-select-option.selected {
+  background: var(--custom-select-selected, #2563eb);
+  color: #fff !important;
+  font-weight: bold;
+}
+.custom-select-option:not(.selected):hover {
+  background: var(--custom-select-highlight, #f3f4f6);
+}
+
+/* Dark mode for custom select */
+body.dark .custom-select-btn,
+body.dark .custom-select-dropdown {
+  --custom-select-bg: #1f2937;
+  --custom-select-color: #fff;
+  --custom-select-highlight: #374151;
+  --custom-select-selected: #2563eb;
+  color: #fff !important;
+  background: #1f2937 !important;
+  border-color: #4B5563 !important;
+}
+body.dark .custom-select-option {
+  color: #fff !important;
+}
+body.dark .custom-select-option.highlighted {
+  background: #374151 !important;
+}
+body.dark .custom-select-option.selected {
+  background: #2563eb !important;
+  color: #fff !important;
+}
+body.dark .custom-select-option:not(.selected):hover {
+  background: #374151 !important;
+}
+
+/* fix z-index for custom select in modals */
+.custom-select-dropdown {
+  z-index: 9999 !important;
+}
