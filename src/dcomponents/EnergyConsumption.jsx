@@ -1,9 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Plot from "react-plotly.js";
 import axios from "axios";
 import moment from "moment-timezone";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { FaCalendar } from "react-icons/fa";
+
+// Custom date input for react-datepicker with icon and dark mode styles
+const CustomDateInput = React.forwardRef(({ value, onClick, label }, ref) => (
+  <div
+    onClick={onClick}
+    ref={ref}
+    className="flex items-center border rounded text-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 w-32 pl-2 pr-2 cursor-pointer"
+  >
+    {label && <span className="text-sm text-gray-600 dark:text-gray-300">{label}</span>}
+    <span className="flex-grow">{value}</span>
+    <FaCalendar className="ml-2 text-gray-600 dark:text-white text-sm" />
+  </div>
+));
+
+// Remove default focus style for react-datepicker's input
+const customDatePickerStyles = `
+  .custom-datepicker input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: #d1d5db !important;
+  }
+`;
 
 const formatDateForBackend = (date) => {
   return moment(date).tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
@@ -25,7 +50,7 @@ const EnergyConsumptionChart = ({ consumptionData, dateRange }) => {
 
   const daysDiff = Math.ceil((dateRange.endDate - dateRange.startDate) / (86400000)) + 1;
   const heatmapData = Array(24).fill().map(() => Array(daysDiff).fill(null));
-  
+
   const dateArray = Array.from({ length: daysDiff }, (_, i) => {
     const d = new Date(dateRange.startDate);
     d.setDate(d.getDate() + i);
@@ -43,15 +68,15 @@ const EnergyConsumptionChart = ({ consumptionData, dateRange }) => {
     const date = new Date(dateRange.startDate);
     date.setDate(date.getDate() + i);
     const formattedDate = date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
-    
+
     acc.labels.push(formattedDate);
-    
+
     const month = date.getMonth();
     if (month !== acc.currentMonth && acc.currentMonth !== null) {
       acc.monthSeparators.push({ dayIndex: i, monthName: date.toLocaleDateString('en-US', { month: 'long' }) });
     }
     acc.currentMonth = month;
-    
+
     return acc;
   }, { labels: [], monthSeparators: [], currentMonth: null });
 
@@ -70,7 +95,6 @@ const EnergyConsumptionChart = ({ consumptionData, dateRange }) => {
           x: labels,
           y: Array.from({ length: 24 }, (_, i) => `${i}:00`),
           type: "heatmap",
-          // Use the same colorscale always (no dark mode change)
           colorscale: [
             [0, "#006400"],
             [0.3, "#90EE90"], // light green
@@ -169,46 +193,63 @@ const EnergyConsumptionChart = ({ consumptionData, dateRange }) => {
 };
 
 const EnergyConsumption = () => {
+  // Use temp states for date pickers before committing to actual fetch
   const [dateRange, setDateRange] = useState({
     startDate: new Date(new Date().setDate(new Date().getDate() - 30)),
     endDate: new Date()
   });
+  const [tempStartDate, setTempStartDate] = useState(dateRange.startDate);
+  const [tempEndDate, setTempEndDate] = useState(dateRange.endDate);
+
   const [consumptionData, setConsumptionData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Date constraints
+  const maxDateRangeDays = 30;
+  const today = moment().tz("Asia/Kolkata").endOf("day").toDate();
+
+  // Keep temp dates in sync with actual state
+  useEffect(() => {
+    setTempStartDate(dateRange.startDate);
+    setTempEndDate(dateRange.endDate);
+  }, [dateRange.startDate, dateRange.endDate]);
+
   const handleDownloadExcel = () => {
     if (!consumptionData?.length) return;
-  
+
     const headerRow = [
       `Start: ${moment(dateRange.startDate).format("YYYY-MM-DD HH:mm:ss")}`,
       `End: ${moment(dateRange.endDate).format("YYYY-MM-DD HH:mm:ss")}`,
       ""
     ];
-  
+
     const columnHeaders = ["Date", "Hour", "Energy Consumed (kVAh)"];
-  
+
     const formattedData = consumptionData.map((item) => [
       item.day,
       `${item.hour}:00`,
       parseFloat(item.total_consumption),
     ]);
-  
+
     const dataForExcel = [
       headerRow,
       columnHeaders,
       ...formattedData,
     ];
-  
+
     const worksheet = XLSX.utils.aoa_to_sheet(dataForExcel);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "EnergyConsumption");
     const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
     const data = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(data, `Heat_Map_${moment(dateRange.startDate).format("YYYY_MM_DD")}_to_${moment(dateRange.endDate).format("YYYY_MM_DD")}.xlsx`);
+    saveAs(
+      data,
+      `Heat_Map_${moment(dateRange.startDate).format("YYYY_MM_DD")}_to_${moment(dateRange.endDate).format("YYYY_MM_DD")}.xlsx`
+    );
   };
-  
 
+  // Fetch data when dateRange changes
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -232,51 +273,66 @@ const EnergyConsumption = () => {
     fetchData();
   }, [dateRange]);
 
+  // Validation: ensure max 30 days window, end date >= start date, end date <= today
+  const handleSubmitDateRange = () => {
+    let start = tempStartDate;
+    let end = tempEndDate;
+
+    // Ensure both are at start of day
+    start = moment(start).startOf("day").toDate();
+    end = moment(end).startOf("day").toDate();
+
+    // Clamp if range > maxDateRangeDays
+    const diff = moment(end).diff(moment(start), "days");
+    if (diff > maxDateRangeDays) {
+      end = moment(start).add(maxDateRangeDays, "days").toDate();
+    }
+    // Clamp end to today
+    if (moment(end).isAfter(today)) {
+      end = today;
+    }
+    setDateRange({ startDate: start, endDate: end });
+  };
+
   return (
     <div className="bg-white dark:bg-gray-900 shadow rounded-lg p-7 transition-colors duration-300">
+      <style>{customDatePickerStyles}</style>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
         <h2 className="text-xl font-semibold dark:text-gray-100 transition-colors duration-300">Energy Heat Map</h2>
         <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-          <div className="flex gap-2">
-            <input
-              type="date"
-              value={moment(dateRange.startDate).format('YYYY-MM-DD')}
-              onChange={(e) => {
-                const newStartDate = new Date(e.target.value);
-                const maxEndDate = new Date(newStartDate);
-                maxEndDate.setDate(maxEndDate.getDate() + 30);
-
-                const adjustedEndDate = dateRange.endDate > maxEndDate ? maxEndDate : dateRange.endDate;
-
-                setDateRange({
-                  startDate: newStartDate,
-                  endDate: adjustedEndDate,
-                });
-              }}
-              max={moment(dateRange.endDate).format('YYYY-MM-DD')}
-              className="pl-2 pr-2 py-1 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-md text-sm w-36 transition-colors duration-300"
-            />
-
-            <input
-              type="date"
-              value={moment(dateRange.endDate).format('YYYY-MM-DD')}
-              onChange={(e) => {
-                const newEndDate = new Date(e.target.value);
-                const minStartDate = new Date(newEndDate);
-                minStartDate.setDate(minStartDate.getDate() - 30);
-
-                const adjustedStartDate = dateRange.startDate < minStartDate ? minStartDate : dateRange.startDate;
-
-                setDateRange({
-                  startDate: adjustedStartDate,
-                  endDate: newEndDate,
-                });
-              }}
-              min={moment(dateRange.startDate).format('YYYY-MM-DD')}
-              max={moment().tz('Asia/Kolkata').format('YYYY-MM-DD')}
-              className="pl-2 pr-2 py-1 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 rounded-md text-sm w-36 transition-colors duration-300"
-            />
-
+          <div className="flex gap-2 items-center">
+            <div className="custom-datepicker">
+              <DatePicker
+                selected={tempStartDate}
+                onChange={(date) => {
+                  setTempStartDate(date);
+                  // If start > end, auto-adjust end
+                  if (moment(date).isAfter(tempEndDate)) setTempEndDate(date);
+                }}
+                maxDate={tempEndDate}
+                minDate={moment(today).subtract(1, "year").toDate()} // Example: 1 year lookback
+                dateFormat="dd:MM:yyyy"
+                customInput={<CustomDateInput/>}
+                calendarClassName="dark:bg-gray-700"
+                popperClassName="z-50"
+              />
+            </div>
+            <div className="custom-datepicker">
+              <DatePicker
+                selected={tempEndDate}
+                onChange={(date) => {
+                  setTempEndDate(date);
+                  // If end < start, auto-adjust start
+                  if (moment(date).isBefore(tempStartDate)) setTempStartDate(date);
+                }}
+                minDate={tempStartDate}
+                maxDate={today}
+                dateFormat="dd:MM:yyyy"
+                customInput={<CustomDateInput/>}
+                calendarClassName="dark:bg-gray-700"
+                popperClassName="z-50"
+              />
+            </div>
             <button
               onClick={handleDownloadExcel}
               className="px-4 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-300"
@@ -286,7 +342,7 @@ const EnergyConsumption = () => {
           </div>
         </div>
       </div>
-      
+
       {loading ? (
         <div className="text-center py-10 dark:text-gray-100">Loading...</div>
       ) : error ? (

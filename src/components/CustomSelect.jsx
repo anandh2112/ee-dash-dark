@@ -76,7 +76,7 @@ const CustomSelect = ({
       <button
         type="button"
         className={`border rounded text-md 
-        bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 flex items-center justify-center w-full`}
+        bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-white dark:border-none flex items-center justify-center w-full`}
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
